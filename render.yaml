@@ -1,0 +1,81 @@
+services:
+  # 1. Render Web Service (HTTP /health + Telegram Webhook/Polling)
+  - type: web
+    name: dostonbek-ai-bot-web
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
+      - key: ALLOWED_TELEGRAM_ID
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: DATABASE_URL
+        fromDatabase:
+          name: dostonbek-ai-db
+          property: connectionString
+      - key: TELEGRAM_API_ID
+        sync: false
+      - key: TELEGRAM_API_HASH
+        sync: false
+      - key: TELEGRAM_SESSION_STRING
+        sync: false
+      - key: CALLER_USERNAME
+        value: "@D_admin_aka"
+      - key: CALLEE_USERNAME
+        value: "@d0stonbek"
+      - key: DEFAULT_TIMEZONE
+        value: Asia/Tashkent
+      - key: ENABLE_HEALTH_SERVER
+        value: "true"
+      - key: USE_WEBHOOK
+        value: "false"
+      - key: WEBHOOK_BASE_URL
+        sync: false
+      - key: WEBHOOK_SECRET
+        generateValue: true
+
+  # 2. Render Cron Job (Har 5 daqiqada muddati kelgan eslatma va hisobotlarni tekshiradi)
+  - type: cron
+    name: dostonbek-ai-bot-cron
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerCommand: python cron_runner.py
+    schedule: "*/5 * * * *"
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
+      - key: ALLOWED_TELEGRAM_ID
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: DATABASE_URL
+        fromDatabase:
+          name: dostonbek-ai-db
+          property: connectionString
+      - key: TELEGRAM_API_ID
+        sync: false
+      - key: TELEGRAM_API_HASH
+        sync: false
+      - key: TELEGRAM_SESSION_STRING
+        sync: false
+      - key: CALLER_USERNAME
+        value: "@D_admin_aka"
+      - key: CALLEE_USERNAME
+        value: "@d0stonbek"
+      - key: DEFAULT_TIMEZONE
+        value: Asia/Tashkent
+
+databases:
+  - name: dostonbek-ai-db
+    databaseName: dostonbek_ai_bot
+    user: dostonbek_bot
+    plan: free
