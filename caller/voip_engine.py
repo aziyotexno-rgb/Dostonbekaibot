@@ -508,14 +508,17 @@ class TelegramVoIPCaller:
 
             async def _play_pcm(pcm_file: Path, duration: float) -> bool:
                 media = ntgcalls.MediaDescription(
-                    ntgcalls.AudioDescription(
-                        media_source=ntgcalls.MediaSource.FILE,
-                        sample_rate=48000,
-                        channel_count=1,
-                        input=str(pcm_file),
-                        keep_open=False,
-                    )
-                )
+    ntgcalls.AudioDescription(
+        media_source=ntgcalls.MediaSource.FILE,
+        sample_rate=48000,
+        channel_count=1,
+        input=str(pcm_file),
+        keep_open=False,
+    ),
+    None,
+    None,
+    None,
+)
                 await ntg.set_stream_sources(
                     user_id,
                     ntgcalls.StreamMode.CAPTURE,
